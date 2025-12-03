@@ -4,6 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
+// Import untuk validasi koneksi Firebase (opsional)
 const { db } = require("./config/firebase");
 
 const app = express();
@@ -17,16 +18,14 @@ const userRoutes = require("./routes/user");
 const organizerRoutes = require("./routes/organizer");
 const eventRoutes = require("./routes/event");
 const ticketRoutes = require("./routes/ticket");
-const transactionRoutes = require("./routes/transaction");
-// const productRoutes = require('./routes/product'); // Dihapus jika tidak diperlukan lagi
+// const transactionRoutes = require("./routes/transaction"); // ❌ Komen dulu karena belum dibuat
 
-// --- 3. HUBUNGKAN ROUTES ---
+// --- HUBUNGKAN ROUTES ---
 app.use("/api/users", userRoutes);
 app.use("/api/organizers", organizerRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/tickets", ticketRoutes);
-app.use("/api/transactions", transactionRoutes);
-// app.use('/api/products', productRoutes); // Contoh jalur jika diperlukan
+// app.use("/api/transactions", transactionRoutes); // ❌ Komen dulu
 
 // Endpoint utama
 app.get("/", (req, res) => {
@@ -37,9 +36,8 @@ app.get("/", (req, res) => {
   });
 });
 
-// --- 4. MULAI SERVER ---
+// --- MULAI SERVER ---
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
+  console.log(`✅ Firebase terhubung: ${db ? "Ya" : "Tidak"}`);
 });
-
-module.exports = { db };

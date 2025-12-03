@@ -68,12 +68,10 @@ const getAllOrganizers = async (req, res) => {
     res.status(200).json(organizers);
   } catch (error) {
     console.error("Error getting all organizers: ", error);
-    res
-      .status(500)
-      .json({
-        message: "Gagal mengambil daftar organizer",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Gagal mengambil daftar organizer",
+      error: error.message,
+    });
   }
 };
 
@@ -90,12 +88,10 @@ const getOrganizerById = async (req, res) => {
     res.status(200).json(organizer);
   } catch (error) {
     console.error("Error getting organizer by ID: ", error);
-    res
-      .status(500)
-      .json({
-        message: "Gagal mengambil detail organizer",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Gagal mengambil detail organizer",
+      error: error.message,
+    });
   }
 };
 
@@ -133,10 +129,44 @@ const deleteOrganizer = async (req, res) => {
   }
 };
 
+const verifyOrganizer = async (req, res) => {
+  try {
+    const organizerId = req.params.id;
+    const { status } = req.body; // 'active' atau 'rejected'
+
+    if (!["active", "rejected"].includes(status)) {
+      return res
+        .status(400)
+        .json({ message: "Status harus 'active' atau 'rejected'." });
+    }
+
+    // Cek organizer ada atau tidak
+    const organizer = await organizerRepository.getOrganizerById(organizerId);
+    if (!organizer) {
+      return res.status(404).json({ message: "Organizer tidak ditemukan." });
+    }
+
+    // Update status
+    await organizerRepository.updateOrganizer(organizerId, { status });
+
+    res
+      .status(200)
+      .json({
+        message: `Organizer berhasil diubah statusnya menjadi ${status}.`,
+      });
+  } catch (error) {
+    console.error("Verify Organizer Error:", error);
+    res
+      .status(500)
+      .json({ message: "Gagal memverifikasi organizer", error: error.message });
+  }
+};
+
 module.exports = {
   createOrganizer,
   getAllOrganizers,
   getOrganizerById,
   updateOrganizer,
   deleteOrganizer,
+  verifyOrganizer,
 };
